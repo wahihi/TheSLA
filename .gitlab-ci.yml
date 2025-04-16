@@ -1,14 +1,23 @@
 stages:
   - lint
 
-super-linter:
+eslint:
   stage: lint
-  image: github/super-linter:slim-v5
+  image: node:latest
   script:
-    - /action/lib/linter.sh
-  variables:
-    VALIDATE_ALL_CODEBASE: "true"
-    DEFAULT_BRANCH: main
+    - npm install eslint
+    - npx eslint .
+  only:
+    - pushes
+    - merge_requests
+
+yamllint:
+  stage: lint
+  image: python:alpine
+  before_script:
+    - pip install yamllint
+  script:
+    - yamllint .
   only:
     - pushes
     - merge_requests
