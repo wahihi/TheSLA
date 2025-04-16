@@ -1,0 +1,14 @@
+stages:
+  - lint
+
+super-linter:
+  stage: lint
+  image: github/super-linter:slim-v5
+  script:
+    - /action/lib/linter.sh
+  variables:
+    VALIDATE_ALL_CODEBASE: "true"
+    DEFAULT_BRANCH: main
+  only:
+    - pushes
+    - merge_requests
