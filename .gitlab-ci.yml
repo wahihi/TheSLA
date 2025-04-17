@@ -1,7 +1,7 @@
 ---
 stages:
   - test
-  - deploy  # deploy 단계 추가
+  - deploy
 
 simple-test:
   stage: test
@@ -13,16 +13,20 @@ simple-test:
     - pushes
     - merge_requests
 
-# GitLab Pages 배포 설정 추가
 pages:
   stage: deploy
   image: alpine:latest
   script:
     - mkdir -p public
-    - cp -r *.html *.js assets/ public/  # 모든 필요한 게임 파일을 public 폴더로 복사
+    - ls -la  # 디버깅용: 현재 디렉토리 구조 확인
+    - cp -r index.html public/ || echo "No index.html found"
+    - mkdir -p public/js
+    - cp -r js/*.js public/js/ || echo "No JS files found"
+    - mkdir -p public/assets
+    - cp -r assets/* public/assets/ || echo "No assets found"
     - echo "Game files deployed to Pages!"
   artifacts:
     paths:
-      - public  # public 폴더의 내용이 웹사이트로 배포됨
+      - public
   only:
-    - main      # main 브랜치에만 적용
+    - main
