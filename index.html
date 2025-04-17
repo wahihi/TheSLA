@@ -4,8 +4,8 @@
         <meta charset="utf-8">
         <meta name="description" content="Space Aliens Game">
         <meta name="keywords" content="mths, ics2o">
-        <meta name="author" content="Mr. Coxall">
-        <meta name="viewport" content="width=devicewidth", initial-scale="1.0">
+        <meta name="author" content="Mr. Coxall"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Space Aliens</title>
         <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
         <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -13,8 +13,16 @@
         <link rel="manifest" href="site.webmanifest">
     </head>
     <body>
-        <script src="//cdn.jsdelivr.net/npm/phaser@3.54.0/dist/phaser.js"></script>
-        <script type="module" src="js/game.js"></script>
+        <!-- https:// 프로토콜 추가 -->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/phaser@3.54.0/dist/phaser.js"></script> -->
+        <script src="https://cdn.jsdelivr.net/npm/phaser@3.88.2/dist/phaser.js"></script>
+        <!-- <script type="module" src="js/game.js"></script> -->
+             <!-- 모듈 방식 제거하고 순서대로 스크립트 로드 -->
+        <script src="js/splashScene.js"></script>
+        <script src="js/titleScene.js"></script>
+        <script src="js/menuScene.js"></script>
+        <script src="js/gameScene.js"></script>
+        <script src="js/game.js"></script>
     </body>
 </html>
-</html>
+<!-- 중복된 </html> 태그 제거 -->
