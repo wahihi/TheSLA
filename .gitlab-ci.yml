@@ -18,12 +18,18 @@ pages:
   image: alpine:latest
   script:
     - mkdir -p public
-    - ls -la  # 디버깅용: 현재 디렉토리 구조 확인
+    - ls -la
+    # index.html 복사
     - cp -r index.html public/ || echo "No index.html found"
+    # JS 파일 복사 (js 폴더 구조 유지)
     - mkdir -p public/js
-    - cp -r js/*.js public/js/ || echo "No JS files found"
+    - cp -r js/ public/ || echo "No JS folder found"
+    # assets 복사 (존재하는 경우)
     - mkdir -p public/assets
-    - cp -r assets/* public/assets/ || echo "No assets found"
+    - cp -r assets/ public/ || echo "No assets folder found"
+    # CDN에서 Phaser 라이브러리 직접 다운로드
+    - apk add --no-cache curl
+    - curl -o public/phaser.js https://cdn.jsdelivr.net/npm/phaser@3.88.2/dist/phaser.js || echo "Failed to download Phaser"
     - echo "Game files deployed to Pages!"
   artifacts:
     paths:
