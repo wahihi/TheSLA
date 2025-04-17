@@ -1,0 +1,32 @@
+{
+  "name": "phaserturorial",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/wahihi/phaserturorial.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/wahihi/phaserturorial/issues"
+  },
+  "homepage": "https://gitlab.com/wahihi/phaserturorial#readme",
+  "devDependencies": {
+    "eslint": "^9.24.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.1"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "eslint --fix"
+  },
+  "dependencies": {
+    "phaser": "^3.88.2"
+  }
+}
