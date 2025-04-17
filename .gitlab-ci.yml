@@ -1,8 +1,8 @@
 ---
 stages:
   - test
+  - deploy  # deploy 단계 추가
 
-# 간단한 테스트 작업만 설정
 simple-test:
   stage: test
   image: alpine:latest
@@ -12,3 +12,17 @@ simple-test:
   only:
     - pushes
     - merge_requests
+
+# GitLab Pages 배포 설정 추가
+pages:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - mkdir -p public
+    - cp -r *.html *.js assets/ public/  # 모든 필요한 게임 파일을 public 폴더로 복사
+    - echo "Game files deployed to Pages!"
+  artifacts:
+    paths:
+      - public  # public 폴더의 내용이 웹사이트로 배포됨
+  only:
+    - main      # main 브랜치에만 적용
