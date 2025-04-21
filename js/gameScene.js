@@ -119,5 +119,17 @@ class GameScene extends Phaser.Scene {
               item.destroy()
             }
           })
-        }
+
+           // 추가된 코드: 적이 하나도 없으면 새 적을 생성
+            if (this.alienGroup.getChildren().length === 0) {
+                this.createAlien()
+            }
+            
+            // 화면 밖으로 나간 적 제거 (추가)
+            this.alienGroup.children.each(function (item) {
+                if (item.y > 1080) {
+                    item.destroy()
+                }
+            })
+        }        
 }
