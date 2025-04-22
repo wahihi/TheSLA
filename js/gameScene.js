@@ -13,6 +13,8 @@ class GameScene extends Phaser.Scene {
 
     this.gameOverText = null
     this.gameOverTextStyle = { font: '65px Arial', fill: '#ff0000', align: 'center' }
+
+    this.controlsImage = null
     }
 
     init (data){
@@ -37,15 +39,24 @@ class GameScene extends Phaser.Scene {
     preload(){
         console.log('Game Scene')
 
-    // images
-    this.load.image('starBackground', 'assets/starBackground.png')
-    this.load.image('ship', 'assets/spaceShip.png')
-    this.load.image('missile', 'assets/missile.png')
-    this.load.image('alien', 'assets/alien.png')
-    // sound
-    this.load.audio('laser', 'assets/laser1.wav')
-    this.load.audio('explosion', 'assets/barrelExploding.wav')
-    this.load.audio('bomb', 'assets/bomb.wav')
+        // images
+        this.load.image('starBackground', 'assets/starBackground.png')
+        this.load.image('ship', 'assets/spaceShip.png')
+        this.load.image('missile', 'assets/missile.png')
+        this.load.image('alien', 'assets/alien.png')
+
+        // 컨트롤 이미지 하나만 로드
+        this.load.image('controls', 'assets/game_controls.png')  // 방향키와 스페이스키가 모두 포함된 하나의 이미지
+     
+        // 로딩 오류 디버깅을 위한 오류 처리 추가
+        this.load.on('loaderror', function(file) {
+            console.error('로딩 오류:', file.src);
+        });
+        
+        // sound
+        this.load.audio('laser', 'assets/laser1.wav')
+        this.load.audio('explosion', 'assets/barrelExploding.wav')
+        this.load.audio('bomb', 'assets/bomb.wav')
     }
 
     create(data) {
@@ -61,27 +72,34 @@ class GameScene extends Phaser.Scene {
         this.alienGroup = this.add.group()
         this.createAlien()
 
-    this.physics.add.collider(this.missileGroup, this.alienGroup, function (missileCollide, alienCollide) {
-      alienCollide.destroy()
-      missileCollide.destroy()
-      this.sound.play('explosion')
-      this.score = this.score + 1
-      this.scoreText.setText('Score: ' + this.score.toString())
-      this.createAlien()
-      this.createAlien()
-    }.bind(this))
+        // 컨트롤 이미지 추가 (화면 좌측 하단에 작게 표시)
+        this.controlsImage = this.add.image(100, 750, 'controls')
+            .setScale(0.2)       // 이미지 크기 20%로 축소 (필요에 따라 조정)
+            .setAlpha(0.7)       // 약간 투명하게
+            .setDepth(1)         // 다른 요소보다 위에 표시
+            .setOrigin(0, 0);    // 좌측 상단 기준점으로 설정
 
-    // Collisions between ship and aliens
-    this.physics.add.collider(this.ship, this.alienGroup, function (shipCollide, alienCollide) {
-      this.sound.play('bomb')
-      this.physics.pause()
-      alienCollide.destroy()
-      shipCollide.destroy()
-      this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again.', this.gameOverTextStyle).setOrigin(0.5)
-      this.gameOverText.setInteractive({ useHandCursor: true })
-      this.gameOverText.on('pointerdown', () => this.scene.start('gameScene'))
-    }.bind(this))
-  }
+        this.physics.add.collider(this.missileGroup, this.alienGroup, function (missileCollide, alienCollide) {
+        alienCollide.destroy()
+        missileCollide.destroy()
+        this.sound.play('explosion')
+        this.score = this.score + 1
+        this.scoreText.setText('Score: ' + this.score.toString())
+        this.createAlien()
+        this.createAlien()
+        }.bind(this))
+
+        // Collisions between ship and aliens
+        this.physics.add.collider(this.ship, this.alienGroup, function (shipCollide, alienCollide) {
+        this.sound.play('bomb')
+        this.physics.pause()
+        alienCollide.destroy()
+        shipCollide.destroy()
+        this.gameOverText = this.add.text(1920 / 2, 1080 / 2, 'Game Over!\nClick to play again.', this.gameOverTextStyle).setOrigin(0.5)
+        this.gameOverText.setInteractive({ useHandCursor: true })
+        this.gameOverText.on('pointerdown', () => this.scene.start('gameScene'))
+        }.bind(this))
+    }
 
     update(time, delta) {
         const keyLeftObj = this.input.keyboard.addKey('LEFT')
