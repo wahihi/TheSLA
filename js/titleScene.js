@@ -42,10 +42,10 @@ class TitleScene extends Phaser.Scene {
 
         // 스크롤 텍스트의 스타일 설정
         const scrollTextStyle = { 
-            font: '32px Arial', 
+            font: '56px Arial', 
             fill: '#fde4b9', 
             align: 'center',
-            wordWrap: { width: 800 }
+            wordWrap: { width: 1000 }
         };
 
         this.scrollText = this.add.text(1920/2, 1200, scrollTextContent, scrollTextStyle)
@@ -63,7 +63,7 @@ class TitleScene extends Phaser.Scene {
             this.tweens.add({
                 targets: this.scrollText,
                 y: -600,
-                duration: 20000,
+                duration: 25000,
                 ease: 'Linear',
                 onComplete: () => {
                     this.scrollComplete = true;

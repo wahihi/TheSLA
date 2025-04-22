@@ -25,6 +25,10 @@ class GameScene extends Phaser.Scene {
         let alienXVelocity = Math.floor(Math.random() * 50) + 1
         alienXVelocity *= Math.round(Math.random()) ? 1 : -1
         const anAlien = this.physics.add.sprite(alienXLocation, -100, 'alien')
+        
+        // 적기의 물리적 충돌 영역을 조정 (다음 라인 추가)
+        anAlien.body.setSize(anAlien.width * 1.2, anAlien.height * 1.2, true)
+
         anAlien.body.velocity.y = 200
         anAlien.body.velocity.x = alienXVelocity
         this.alienGroup.add(anAlien)
@@ -104,6 +108,10 @@ class GameScene extends Phaser.Scene {
             if (this.fireMissile === false){
                 this.fireMissile = true
                 const aNewMissile = this.physics.add.sprite(this.ship.x, this.ship.y, 'missile')
+
+                // 미사일의 물리적 충돌 영역을 조정 (다음 라인 추가)
+                aNewMissile.body.setSize(aNewMissile.width * 1.5, aNewMissile.height * 1.5, true)
+                
                 this.missileGroup.add(aNewMissile)
                 this.sound.play('laser')
             }
