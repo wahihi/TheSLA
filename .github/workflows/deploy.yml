@@ -10,9 +10,14 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    # GitHub Actions 권한 명시
+    permissions:
+      contents: write
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
+        with:
+          persist-credentials: false  # 중요: 인증 문제 해결을 위해 추가
 
       - name: Install and Build 🔧
         run: |
@@ -20,9 +25,14 @@ jobs:
           # npm install
           # npm run build
           # 빌드가 필요 없는 정적 사이트는 이 단계를 건너뛸 수 있음
-
+          
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: . # 배포할 폴더 (Phaser 게임의 경우 보통 루트 디렉토리)
-          branch: gh-pages # 배포할 브랜치
+          folder: .                     # 배포할 폴더 (Phaser 게임의 경우 보통 루트 디렉토리)
+          branch: gh-pages              # 배포할 브랜치
+          clean: true                   # 이전 배포 내용 정리
+          token: ${{ secrets.GITHUB_TOKEN }}  # GitHub 제공 토큰 사용
+          clean-exclude: |              # 필요에 따라 보존할 파일들 (선택 사항)
+            .nojekyll
+            CNAME
