@@ -17,6 +17,16 @@ class GameScene extends Phaser.Scene {
         this.gameWidth = 0
         this.gameHeight = 0
         this.scaleRatio = 1
+
+        // 터치 컨트롤 버튼
+        this.leftButton = null
+        this.rightButton = null
+        this.fireButton = null
+        
+        // 터치 컨트롤 상태
+        this.leftPressed = false
+        this.rightPressed = false
+        this.isMobile = false
     }
 
     init (data){
@@ -31,6 +41,9 @@ class GameScene extends Phaser.Scene {
             this.gameWidth / window.gameWidth,
             this.gameHeight / window.gameHeight
         )
+
+        // 모바일 기기 감지
+        this.isMobile = !this.sys.game.device.os.desktop;
     }
 
     createAlien () {
@@ -60,6 +73,9 @@ class GameScene extends Phaser.Scene {
 
         // 컨트롤 이미지 하나만 로드
         this.load.image('controls', 'assets/game_controls.png')  // 방향키와 스페이스키가 모두 포함된 하나의 이미지
+        this.load.image('leftButton', 'assets/leftButton.png')
+        this.load.image('rightButton', 'assets/rightButton.png')
+        this.load.image('fireButton', 'assets/redButton.png')
      
         // 로딩 오류 디버깅을 위한 오류 처리 추가
         this.load.on('loaderror', function(file) {
@@ -98,6 +114,7 @@ class GameScene extends Phaser.Scene {
         this.alienGroup = this.add.group();
         this.createAlien();
 
+        if(!this.isMobile) {
         // 컨트롤 이미지 추가 (화면 크기에 비례)
         const controlScale = Math.max(0.1, 0.2 * this.scaleRatio);
         this.controlsImage = this.add.image(10, this.gameHeight - 10, 'controls')
@@ -105,6 +122,10 @@ class GameScene extends Phaser.Scene {
             .setAlpha(0.7)
             .setDepth(1)
             .setOrigin(0, 1); // 좌측 하단 기준
+        }
+        else{
+            this.createMobileControls();
+        }
 
         this.physics.add.collider(this.missileGroup, this.alienGroup, function (missileCollide, alienCollide) {
             alienCollide.destroy();
@@ -139,6 +160,49 @@ class GameScene extends Phaser.Scene {
         }.bind(this));
     }
 
+        // 모바일 컨트롤 생성 메서드
+    createMobileControls() {
+        // 버튼 크기 계산 (화면 크기에 맞게 조정)
+        const buttonScale = Math.max(0.5, 1 * this.scaleRatio);
+        const buttonSize = 100 * buttonScale;
+        const margin = 20 * this.scaleRatio;
+        
+        // 왼쪽 이동 버튼
+        this.leftButton = this.add.image(margin + buttonSize/2, this.gameHeight - margin - buttonSize/2, 'leftButton')
+            .setScale(buttonScale)
+            .setAlpha(0.7)
+            .setDepth(1)
+            .setInteractive();
+            
+        // 오른쪽 이동 버튼
+        this.rightButton = this.add.image(margin + buttonSize/2 + buttonSize + margin, this.gameHeight - margin - buttonSize/2, 'rightButton')
+            .setScale(buttonScale)
+            .setAlpha(0.7)
+            .setDepth(1)
+            .setInteractive();
+            
+        // 미사일 발사 버튼
+        this.fireButton = this.add.image(this.gameWidth - margin - buttonSize/2, this.gameHeight - margin - buttonSize/2, 'fireButton')
+            .setScale(buttonScale)
+            .setAlpha(0.7)
+            .setDepth(1)
+            .setInteractive();
+            
+        // 터치 이벤트 리스너 설정
+        this.leftButton.on('pointerdown', () => { this.leftPressed = true; });
+        this.leftButton.on('pointerup', () => { this.leftPressed = false; });
+        this.leftButton.on('pointerout', () => { this.leftPressed = false; });
+        
+        this.rightButton.on('pointerdown', () => { this.rightPressed = true; });
+        this.rightButton.on('pointerup', () => { this.rightPressed = false; });
+        this.rightButton.on('pointerout', () => { this.rightPressed = false; });
+        
+        this.fireButton.on('pointerdown', () => { this.fireMissile = true; });
+        this.fireButton.on('pointerup', () => { this.fireMissile = false; });
+        this.fireButton.on('pointerout', () => { this.fireMissile = false; });
+    }
+
+
     // 화면 크기 변경 시 호출되는 메서드
     resize(gameSize) {
         // 새 게임 크기 저장
@@ -163,11 +227,21 @@ class GameScene extends Phaser.Scene {
             this.scoreText.setStyle(this.scoreTextStyle);
         }
         
-        // 컨트롤 이미지 업데이트
+        // PC 컨트롤 이미지 업데이트
         if (this.controlsImage) {
             const controlScale = Math.max(0.1, 0.2 * this.scaleRatio);
             this.controlsImage.setScale(controlScale);
             this.controlsImage.setPosition(10, this.gameHeight - 10);
+        }
+        
+        // 모바일 컨트롤 버튼 업데이트
+        if (this.isMobile) {
+            // 기존 버튼 제거 후 다시 생성
+            if (this.leftButton) this.leftButton.destroy();
+            if (this.rightButton) this.rightButton.destroy();
+            if (this.fireButton) this.fireButton.destroy();
+            
+            this.createMobileControls();
         }
         
         // 게임오버 텍스트 업데이트
@@ -188,7 +262,7 @@ class GameScene extends Phaser.Scene {
         const moveSpeed = 15 * this.scaleRatio;
 
         // 왼쪽 키
-        if (keyLeftObj.isDown === true){
+        if (keyLeftObj.isDown === true || this.leftPressed){
             this.ship.x -= moveSpeed;
             if (this.ship.x < 0){
                 this.ship.x = 0;
@@ -196,15 +270,15 @@ class GameScene extends Phaser.Scene {
         }
 
         // 오른쪽 키
-        if (keyRightObj.isDown === true){
+        if (keyRightObj.isDown === true || this.rightPressed){
             this.ship.x += moveSpeed;
             if (this.ship.x > this.gameWidth){
                 this.ship.x = this.gameWidth;
             }
         }
 
-        if (keySpaceObj.isDown === true){
-            if (this.fireMissile === false){
+        if (keySpaceObj.isDown === true || this.fireMissile){
+            if (this.fireMissile === false || keySpaceObj.isDown === false){
                 this.fireMissile = true;
                 const aNewMissile = this.physics.add.sprite(this.ship.x, this.ship.y, 'missile');
 
@@ -221,7 +295,7 @@ class GameScene extends Phaser.Scene {
             }
         }
 
-        if (keySpaceObj.isUp === true){
+        if (keySpaceObj.isUp === true && !this.fireMissile){
             this.fireMissile = false;
         }
 
