@@ -43,7 +43,32 @@ class GameScene extends Phaser.Scene {
         )
 
         // 모바일 기기 감지
-        this.isMobile = !this.sys.game.device.os.desktop;
+        // this.isMobile = !this.sys.game.device.os.desktop;
+        // 더 강력한 모바일 감지
+        this.isMobile = this.sys.game.device.os.android || 
+                        this.sys.game.device.os.iOS || 
+                        this.sys.game.device.os.iPad ||
+                        (this.sys.game.device.touch && !this.sys.game.device.os.desktop);
+        
+          // 디버깅 코드
+        console.log('이 기기는 모바일입니까?', this.isMobile);
+        console.log('게임 크기:', this.gameWidth, 'x', this.gameHeight);
+        console.log('스케일 비율:', this.scaleRatio);
+
+          // 터치 이벤트 테스트 코드 (함수 끝부분에 추가)
+        const debugOverlay = this.add.rectangle(
+            this.gameWidth / 2, 
+            this.gameHeight / 2, 
+            200, 
+            200, 
+            0xff0000, 
+            0.5
+        );
+        debugOverlay.setInteractive();
+        debugOverlay.on('pointerdown', function() {
+            console.log('터치 감지됨!');
+        });
+        
     }
 
     createAlien () {
@@ -72,10 +97,10 @@ class GameScene extends Phaser.Scene {
         this.load.image('alien', 'assets/alien.png')
 
         // 컨트롤 이미지 하나만 로드
-        this.load.image('controls', 'assets/game_controls.png')  // 방향키와 스페이스키가 모두 포함된 하나의 이미지
-        this.load.image('leftButton', 'assets/leftButton.png')
-        this.load.image('rightButton', 'assets/rightButton.png')
-        this.load.image('fireButton', 'assets/redButton.png')
+        // this.load.image('controls', 'assets/game_controls.png')  // 방향키와 스페이스키가 모두 포함된 하나의 이미지
+        this.load.image('leftButton', './assets/leftButton.png')
+        this.load.image('rightButton', './assets/rightButton.png')
+        this.load.image('fireButton', './assets/redButton.png')
      
         // 로딩 오류 디버깅을 위한 오류 처리 추가
         this.load.on('loaderror', function(file) {

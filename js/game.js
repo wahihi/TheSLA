@@ -26,7 +26,7 @@ const config = {
     },
     backgroundColor: 0xffffff,
     scale: {
-        mode: Phaser.Scale.RESIZE,       // FIT 대신 RESIZE로 변경
+        mode: Phaser.Scale.FIT,       
         parent: 'game-container',        // HTML에 추가될 div ID
         width: '100%',                   // 컨테이너의 100% 사용
         height: '100%',                  // 컨테이너의 100% 사용
